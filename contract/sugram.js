@@ -51,7 +51,7 @@ module.exports = {
         // app.balances.transfer("ETM", amount, this.trs.senderId);
         app.balances.decrease(this.trs.senderId, "ETM", amount);
         const withdrawalSecret = app.config.secrets[0];
-        const outTr = ETMJS.createOutTransfer(recipientId, app.meta.transactionId, this.trs.id, "ETM", amount, withdrawalSecret);
+        const outTr = ETMJS.transfer.createOutTransfer(recipientId, app.meta.transactionId, this.trs.id, "ETM", amount, withdrawalSecret);
         outTr.signatures = [];
         for (let i = 0; i < app.config.secrets.length; i++) {
             const secret = app.config.secrets[i];

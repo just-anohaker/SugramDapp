@@ -24,16 +24,31 @@ app.route.get("/sugram/withdrawalTo", async function (req) {
         }
     });
     if (trInfo == null) {
-        return "Transaction not Found";
+        throw new Error("Transaction not Found");
     }
     const extraData = await app.model.WithdrawalTo.findOne({
         condition: {
-            tid: tid
+            tid: trInfo.tid
         }
     });
     if (extraData == null) {
-        return "Transaction do not with withdrawal";
+        throw new Error("Transaction do not with withdrawal");
     }
     trInfo.outId = extraData.outId;
     return { transaction: trInfo };
+});
+
+app.route.get("/sugram/withdrawalTos", async function (req) {
+    console.log("[interface sugram] /sugram/withdrawalTos request:", req.query);
+    const senderId = String(req.query.id || "").trim();
+    if (senderId === "") {
+        throw new Error("Invalid address:" + senderId);
+    }
+
+    const withdrawalTrs = await app.model.WithdrawalTo.findOne({
+        condition: {
+            senderId: senderId
+        }
+    });
+    return { transactions: withdrawalTrs ? withdrawalTrs : [] };
 });

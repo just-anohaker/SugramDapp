@@ -29,7 +29,7 @@ app.route.get("/sugram/withdrawals", async function (req) {
         if (outTransferTr == null) {
             throw new Error("Transaction do not with withdrawal");
         }
-        return { transaction: [outTransferTr] };
+        return { transactions: [outTransferTr] };
     }
 
     if (senderId !== "") {

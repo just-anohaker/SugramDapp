@@ -11,44 +11,42 @@ app.route.get("/sugram/balance", async function (req) {
     return { balance: resp.toString() };
 });
 
-app.route.get("/sugram/withdrawalTo", async function (req) {
+app.route.get("/sugram/withdrawals", async function (req) {
     console.log("[interface sugram] /sugram/withdrawalTo request:", req.query);
-    const tid = String(req.query.id || "").trim();
-    if (tid === "") {
-        throw new Error("Invalid transactionId:" + tid);
-    }
-
-    const trInfo = await app.model.Transaction.findOne({
-        condition: {
-            id: tid
-        }
-    });
-    if (trInfo == null) {
-        throw new Error("Transaction not Found");
-    }
-    const extraData = await app.model.WithdrawalTo.findOne({
-        condition: {
-            tid: trInfo.id
-        }
-    });
-    if (extraData == null) {
-        throw new Error("Transaction do not with withdrawal");
-    }
-    trInfo.outId = extraData.outId;
-    return { transaction: trInfo };
-});
-
-app.route.get("/sugram/withdrawalTos", async function (req) {
-    console.log("[interface sugram] /sugram/withdrawalTos request:", req.query);
+    const id = String(req.query.id || "").trim();
     const senderId = String(req.query.senderId || "").trim();
-    if (senderId === "") {
-        throw new Error("Invalid address:" + senderId);
+    const recipientId = String(req.query.recipientId || "").trim();
+    if (id === "" && senderId === "" && recipientId === "") {
+        throw new Error("Invalid arguments, must has one of ['id', 'senderId', 'recipientId']");
     }
 
-    const withdrawalTrs = await app.model.WithdrawalTo.findAll({
-        condition: {
-            senderId: senderId
+    if (id !== "") {
+        const outTransferTr = await app.model.WithdrawalTo.findOne({
+            condition: {
+                tid: id
+            }
+        });
+        if (outTransferTr == null) {
+            throw new Error("Transaction do not with withdrawal");
         }
-    });
-    return { transactions: withdrawalTrs ? withdrawalTrs : [] };
+        return { transaction: [outTransferTr] };
+    }
+
+    if (senderId !== "") {
+        const withdrawalTrs = await app.model.WithdrawalTo.findAll({
+            condition: {
+                senderId: senderId
+            }
+        });
+        return { transactions: withdrawalTrs ? withdrawalTrs : [] };
+    }
+
+    if (recipientId !== "") {
+        const withdrawalTrs = await app.model.WithdrawalTo.findAll({
+            condition: {
+                recipientId: recipientId
+            }
+        });
+        return { transactions: withdrawalTrs ? withdrawalTrs : [] };
+    }
 });

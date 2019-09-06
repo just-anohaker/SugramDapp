@@ -64,7 +64,7 @@ module.exports = {
         }
 
         try {
-            await global.PIFY(modules.api.dapps.submitOutTransfer)(outTr);
+            await global.PIFY(app.api.dapps.submitOutTransfer)(outTr);
             app.sdb.create("withdrawalTo", {
                 tid: this.trs.id,
                 senderId: this.trs.senderId,

@@ -41,7 +41,6 @@ module.exports = {
             length: 64,
             not_null: !0,
             unique: !0,
-            primary_key: !0
         }
     ]
 }

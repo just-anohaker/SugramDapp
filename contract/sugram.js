@@ -71,7 +71,8 @@ module.exports = {
                 tid: this.trs.id,
                 senderId: this.trs.senderId,
                 recipientId: recipientId,
-                amount: bignum(amount).toString(),
+                amount: transferAmount,
+                fee: feeAmount,
                 currency: "ETM",
                 outId: outTr.id
             });

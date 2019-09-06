@@ -30,6 +30,12 @@ module.exports = {
             not_null: !0,
         },
         {
+            name: "fee",
+            type: "String",
+            length: 50,
+            not_null: !0,
+        },
+        {
             name: "currency",
             type: "String",
             length: 256,

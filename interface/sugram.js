@@ -28,7 +28,7 @@ app.route.get("/sugram/withdrawalTo", async function (req) {
     }
     const extraData = await app.model.WithdrawalTo.findOne({
         condition: {
-            tid: trInfo.tid
+            tid: trInfo.id
         }
     });
     if (extraData == null) {
@@ -40,12 +40,12 @@ app.route.get("/sugram/withdrawalTo", async function (req) {
 
 app.route.get("/sugram/withdrawalTos", async function (req) {
     console.log("[interface sugram] /sugram/withdrawalTos request:", req.query);
-    const senderId = String(req.query.id || "").trim();
+    const senderId = String(req.query.senderId || "").trim();
     if (senderId === "") {
         throw new Error("Invalid address:" + senderId);
     }
 
-    const withdrawalTrs = await app.model.WithdrawalTo.findOne({
+    const withdrawalTrs = await app.model.WithdrawalTo.findAll({
         condition: {
             senderId: senderId
         }

@@ -36,5 +36,44 @@ module.exports = {
             type,
             desc: desc || ""
         });
+    },
+
+    withdrawalTo: async function (recipientId, amount) {
+        if (!isaddress(recipientId)) {
+            return "Invalid recipientId";
+        }
+
+        if (app.validate("amount", amount) || app.balances.get(this.trs.senderId, "ETM").lt(amount)) {
+            return "Insufficient balance";
+        }
+
+        // app.balances.transfer("ETM", amount, this.trs.senderId);
+        app.balances.decrease(this.trs.senderId, "ETM", amount);
+        const withdrawalSecret = app.config.secrets[0];
+        const outTr = ETMJS.createOutTransfer(recipientId, app.meta.transactionId, this.trs.id, "ETM", amount, withdrawalSecret);
+        outTr.signatures = [];
+        for (let i = 0; i < app.config.secrets.length; i++) {
+            const secret = app.config.secrets[i];
+            if (secret !== withdrawalSecret) {
+                outTr.signatures.push(ETMJS.transfer.signOutTransfer(outTr, secret));
+            }
+            if (outTr.signatures.length >= app.meta.unlockDelegates) {
+                break;
+            }
+        }
+
+        try {
+            await global.PIFY(modules.api.dapps.submitOutTransfer)(outTr);
+            app.sdb.create("withdrawalTo", {
+                tid: this.trs.id,
+                senderId: this.trs.senderId,
+                recipientId: recipientId,
+                amount: bignum(amount).toString(),
+                currency: "ETM",
+                outId: outTr.id
+            });
+        } catch (error) {
+            return error.toString();
+        }
     }
 }

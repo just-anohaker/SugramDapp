@@ -10,6 +10,8 @@ module.exports = async function () {
 
     app.registerFee(1000, 0);
     app.registerContract(1000, "sugram.pay");
+    app.registerFee(1001, 0);
+    app.registerContract(1001, "sugram.withdrawalTo");
 
     console.log("dapp[SugramDapp] inited");
     // 

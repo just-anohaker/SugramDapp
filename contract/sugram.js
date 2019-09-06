@@ -1,6 +1,7 @@
 "use strict";
 
 const base58check = require("../helpers/base58check");
+const ETMJS = require("etm-js");
 const bignum = require("bignumber");
 
 function isaddress(address) {
